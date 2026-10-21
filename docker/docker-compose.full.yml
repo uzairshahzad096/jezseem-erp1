@@ -1,0 +1,81 @@
+# Full containerised stack — for deploying to the company server or a VPS.
+# Day-to-day development does not need this; see the README.
+#     docker compose -f docker/docker-compose.full.yml up --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jezseem_erp}
+      POSTGRES_USER: ${POSTGRES_USER:-jezseem}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"  # bound to localhost only — never exposed publicly (spec section 26)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jezseem}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  backend:
+    build: ../backend
+    restart: unless-stopped
+    env_file: ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../backend:/app
+      - uploads:/data/uploads
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  celery_worker:
+    build: ../backend
+    restart: unless-stopped
+    env_file: ../.env
+    depends_on:
+      - backend
+      - redis
+    volumes:
+      - ../backend:/app
+    command: celery -A app.core.celery_app worker --loglevel=info
+
+  frontend:
+    build: ../frontend
+    restart: unless-stopped
+    env_file: ../.env
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
+  uploads:

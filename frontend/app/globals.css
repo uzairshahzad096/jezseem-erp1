@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * The ERP's colours. Every screen takes its colours from these variables
+ * (through tailwind.config.ts), so the look is changed here and nowhere else.
+ *
+ * This is the original Jezseem scheme: a fresh green accent on a soft
+ * green-grey page, with slate text.
+ *
+ * --primary-ink is the primary colour when used as text, --on-primary the
+ * text placed on a primary fill, and --secondary / --success the colour of
+ * "good" states. In this scheme they are all the same green or white; they
+ * are separate names so a different palette can set them apart.
+ */
+
+/* Light theme */
+:root {
+  --primary: 43 193 85;
+  --primary-dark: 33 162 68;
+  --primary-soft: 233 249 238;
+  --primary-ink: 43 193 85;
+  --on-primary: 255 255 255;
+
+  --secondary: 43 193 85;
+  --success: 43 193 85;
+
+  --bg: 243 247 245;
+  --surface: 255 255 255;
+  --sidebar: 255 255 255;
+  --topbar: 255 255 255;
+
+  --text: 42 53 71;
+  --text-muted: 126 138 153;
+  --text-faint: 163 174 186;
+  --line: 235 240 238;
+  --hover: 244 248 246;
+  --grid-line: 238 242 240;
+
+  --amber: 255 170 43;
+  --rose: 251 123 123;
+  --sky: 90 155 246;
+  --violet: 184 92 245;
+}
+
+.dark {
+  --primary-soft: 29 53 39;
+  --bg: 23 30 39;
+  --surface: 34 43 54;
+  --sidebar: 27 36 48;
+  --topbar: 27 36 48;
+  --text: 232 237 242;
+  --text-muted: 147 160 174;
+  --text-faint: 110 124 138;
+  --line: 44 55 67;
+  --hover: 42 53 66;
+  --grid-line: 44 55 67;
+}
+
+/*
+ * The page itself carries the theme, not just the app shell: dialogs and
+ * dropdown lists are drawn straight into <body>, outside the shell, and would
+ * otherwise fall back to black text on the dark theme. `color-scheme` makes
+ * the browser's own controls (dropdowns, date pickers, checkboxes,
+ * scrollbars) follow the theme too.
+ */
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

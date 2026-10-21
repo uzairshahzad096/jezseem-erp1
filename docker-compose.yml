@@ -1,0 +1,31 @@
+# Optional convenience: PostgreSQL only.
+#
+# Use this if you would rather not install PostgreSQL on Windows directly:
+#     docker compose up -d
+#
+# The backend and frontend run natively (see scripts/ and the README).
+# The full containerised stack, for deploying to the company server, lives
+# at docker/docker-compose.full.yml.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jezseem-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jezseem_erp}
+      POSTGRES_USER: ${POSTGRES_USER:-jezseem}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Bound to localhost only — never exposed to the network.
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jezseem}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

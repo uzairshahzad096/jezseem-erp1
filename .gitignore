@@ -1,0 +1,57 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+.next/
+.env
+*.log
+.DS_Store
+uploads/
+backend/.venv/
+
+# Company artwork, not code. signature.png carries an authorised signature —
+# a copy of the source tree should not also be a copy of that.
+backend/app/documents/assets/logo.png
+backend/app/documents/assets/signature.png
+
+# Pre-change snapshots written by the one-off repair scripts.
+data/backups/
+
+# Private environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python environments
+**/.venv/
+**/venv/
+**/__pycache__/
+
+# Frontend generated files
+**/node_modules/
+**/.next/
+
+# Database backups
+*.dump
+*.backup
+*.bak
+
+# Local business data and database backups
+/data/backups/
+/data/inventory/
+/data/partners/
+
+# Local database exports
+*.dump
+*.backup
+*.bak
+
+# Backend local backups and business documents
+/backend/data/backups/
+
+# Generated TypeScript build information
+/frontend/tsconfig.tsbuildinfo
